@@ -6,21 +6,17 @@
 
 using namespace std;
 
-#include "NEAT/neat.h"
-#include "NEAT/network.h"
-#include "NEAT/population.h"
-#include "NEAT/organism.h"
-#include "NEAT/genome.h"
-#include "NEAT/species.h"
-
 #include "config.h"
 #include "draw.h"
+#include "population.h"
 
 struct {
 	float x, y, z;
 	float lx, ly, lz;
 	float anglex, angley, anglez;
 } camera;
+
+population pop;
 
 void key_cb(unsigned char key, int x, int y)
 {
@@ -200,29 +196,33 @@ void display_cb_bug()
 	glLoadIdentity();
 	
 	// run the network (updates all neurons and draws them)
-	//pop.run();
-	//pop.display();
+	pop.step();
+	pop.display();
+	
+	//cout << pop.epoch << " " << pop.cur_animal << "\n";
 	
 	// swap to our buffer and show the network we just built
 	glutSwapBuffers();
 	glutPostRedisplay();
 }
 
-int main(int argc, char ** argv)
+int main_(int argc, char ** argv)
 {
-	NEAT::Genome *g		=	new NEAT::Genome(0, 3, 2, 1, 32, true, .4);
+	//NEAT::Genome *g		=	new NEAT::Genome(0, 3, 2, 1, 32, true, 1);
+	NEAT::Genome *g		=	new NEAT::Genome(3, 2, 0, 0);
 	NEAT::Population *p	=	new NEAT::Population(g, 6);
 	NEAT::Network *cur_n;
 	
-	double inputs[]	=	{.3, .5, .9};
+	double inputs[]	=	{.4, .5, .9};
 	unsigned int i;
 	
 	cur_n	=	p->organisms[0]->net;
 	cur_n->load_sensors(inputs);
+	cur_n->activate();
 	
 	for(i = 0; i < cur_n->outputs.size(); i++)
 	{
-		cout << "Output [" << i << "] = " << cur_n->outputs[i]->output << "\n";
+		cout << "Output [" << i << "] = " << cur_n->outputs[i]->activation << "\n";
 	}
 	
 	delete g;
@@ -232,7 +232,7 @@ int main(int argc, char ** argv)
 }
 
 
-int main_(int argc, char ** argv)
+int main(int argc, char ** argv)
 {
 	int win, bugwin;
 	
@@ -272,7 +272,7 @@ int main_(int argc, char ** argv)
 	glClearColor(1, 1, 1, 0);
 	glutDisplayFunc(display_cb_bug);
 	
-	//pop.reset(POP_NUM_ANIMALS, POP_NUM_FOOD);
+	pop.reset(POP_NUM_ANIMALS, POP_NUM_FOOD, POP_NUM_EPOCHS);
 	
 	glutMainLoop();
 	

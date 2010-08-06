@@ -22,12 +22,15 @@
 // ----------------------------------------
 // population settings
 // ----------------------------------------
-#define POP_NUM_ANIMALS				1
-#define POP_NUM_FOOD				1
+#define POP_NUM_ANIMALS				6
+#define POP_NUM_FOOD				10
+#define POP_NUM_EPOCHS				200
 
 // ----------------------------------------
 // network settings
 // ----------------------------------------
+#define NET_NUM_INPUTS				3
+#define NET_NUM_OUTPUTS				2
 
 // ----------------------------------------
 // neuron settings
