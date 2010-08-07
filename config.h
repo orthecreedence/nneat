@@ -22,15 +22,21 @@
 // ----------------------------------------
 // population settings
 // ----------------------------------------
-#define POP_NUM_ANIMALS				6
-#define POP_NUM_FOOD				10
-#define POP_NUM_EPOCHS				200
+#define POP_NUM_ANIMALS				12
+#define POP_NUM_FOOD				40
+#define POP_NUM_EPOCHS				12000
+#define POP_DELAY					0000
+
+#define ANIMAL_MAX_TURN_ANGLE		1
 
 // ----------------------------------------
 // network settings
 // ----------------------------------------
-#define NET_NUM_INPUTS				3
-#define NET_NUM_OUTPUTS				2
+#define NET_NUM_INPUTS				1
+#define NET_NUM_HIDDEN				4
+#define NET_NUM_OUTPUTS				1
+#define NET_GENOME_TYPE				2	// 0 - Fully linked, no hidden nodes 1 - Fully linked, one hidden node splitting each link 2 - Fully connected with a hidden layer, recurrent 
+
 
 // ----------------------------------------
 // neuron settings

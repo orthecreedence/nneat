@@ -31,6 +31,7 @@ public:
 	~population();
 	
 	void reset(unsigned int, unsigned int, unsigned int);
+	void reset();
 	void assign_animals();
 	void run();
 	unsigned int step();

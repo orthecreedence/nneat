@@ -59,6 +59,7 @@ void key_cb(unsigned char key, int x, int y)
 			break;
 		case 'R':
 			// intentionally don't break so the screen resets
+			pop.reset();
 		case 'r':
 			// reset the view
 			camera.x	=	G_INITIAL_X;
@@ -81,7 +82,13 @@ void key_cb(unsigned char key, int x, int y)
 				0.0, 1.0, 0.0
 			);
 			break;
+		case 'k':
+			// "kill" the current animal (set its fitness to 0 and give it no more iterations)
+			pop.animals[pop.cur_animal].organism->fitness	=	0;
+			pop.epoch	=	POP_NUM_EPOCHS + 1;
+			break;
 		case 'p':
+			pop.pause(2);
 			break;
 	}
 }
@@ -119,16 +126,16 @@ void resize_cb(int w, int h)
 	{
 		h = 1;
 	}
-
+	
 	float ratio	=	1.0* w / h;
-
+	
 	// Reset the coordinate system before modifying
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	
 	// Set the viewport to be the entire window
 	glViewport(0, 0, w, h);
-
+	
 	// Set the correct perspective.
 	gluPerspective(45,ratio,1,1000);
 	glMatrixMode(GL_MODELVIEW);
@@ -210,20 +217,22 @@ int main_(int argc, char ** argv)
 {
 	//NEAT::Genome *g		=	new NEAT::Genome(0, 3, 2, 1, 32, true, 1);
 	NEAT::Genome *g		=	new NEAT::Genome(3, 2, 0, 0);
-	NEAT::Population *p	=	new NEAT::Population(g, 6);
-	NEAT::Network *cur_n;
+	NEAT::Population *p	=	new NEAT::Population(g, POP_NUM_ANIMALS);
+	vector<NEAT::Species*>::iterator si;
+	vector<NEAT::Organism*>::iterator oi;
 	
-	double inputs[]	=	{.4, .5, .9};
-	unsigned int i;
+	//unsigned int i;
 	
-	cur_n	=	p->organisms[0]->net;
-	cur_n->load_sensors(inputs);
-	cur_n->activate();
-	
-	for(i = 0; i < cur_n->outputs.size(); i++)
+	for(oi = p->organisms.begin(); oi != p->organisms.end(); oi++)
 	{
-		cout << "Output [" << i << "] = " << cur_n->outputs[i]->activation << "\n";
+		(*oi)->fitness	=	(int)(RAND * 10);
 	}
+	
+	p->epoch(1);
+	
+	cout << "org size: " << p->organisms.size() << "\n";
+	
+	cout << "Gen 1 finished\n";
 	
 	delete g;
 	delete p;

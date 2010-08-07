@@ -30,7 +30,6 @@ void animal::reset()
 void animal::run()
 {
 	unsigned int i;
-	double angle;
 	double inputs[this->inputs.size()];
 	NEAT::Network *net;
 	
@@ -49,19 +48,19 @@ void animal::run()
 		this->outputs.push_back(net->outputs[i]->activation);
 	}
 	
-	this->direction	=	this->outputs[0] >= 0 ? this->outputs[0] : this->direction;
-	this->speed		=	this->outputs[1] >= 0 ? this->outputs[1] : this->speed;
-	
-	//cout << this->direction << " " << this->speed << endl;
-	
-	angle	=	(this->direction * 360) / (180 / PI);
-	this->x	+=	sin(angle) * this->speed * .1;
-	this->y	+=	cos(angle) * this->speed * .1;
+	this->direction	+=	(2 * ANIMAL_MAX_TURN_ANGLE) * (this->outputs[0] - .5);
+	//this->speed		=	this->outputs[1];
+	this->speed	=	1;
+	this->x			+=	cos(this->direction * (PI / 180)) * this->speed * .001;
+	this->y			+=	sin(this->direction * (PI / 180)) * this->speed * .001;
 	
 	if(this->x > 1)		this->x	=	1;
 	if(this->x < -1)	this->x	=	-1;
 	if(this->y > 1)		this->y	=	1;
 	if(this->y < -1)	this->y	=	-1;
+	
+	if(this->direction > 360)	this->direction	=	this->direction - 360;
+	if(this->direction < 0)		this->direction	=	360 + this->direction;
 }
 
 

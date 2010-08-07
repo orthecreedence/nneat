@@ -6,6 +6,7 @@
 #include "draw.h"
 #include "config.h"
 #include "NEAT/population.h"
+#include "NEAT/species.h"
 #include "NEAT/genome.h"
 
 using namespace std;
@@ -19,13 +20,21 @@ population::population()
 
 population::~population() {}
 
+void population::reset()
+{
+	delete this->pop;
+	delete this->genome;
+	
+	this->reset(this->num_animals, this->num_food, this->num_epochs);
+}
+
 void population::reset(unsigned int num_animals, unsigned int num_food, unsigned int num_epochs)
 {
 	unsigned int i;
 	animal a;
 	food f;
 	
-	this->genome	=	new NEAT::Genome(NET_NUM_INPUTS, NET_NUM_OUTPUTS, 0, 0);
+	this->genome	=	new NEAT::Genome(NET_NUM_INPUTS, NET_NUM_OUTPUTS, NET_NUM_HIDDEN, NET_GENOME_TYPE);
 	this->pop		=	new NEAT::Population(this->genome, num_animals);
 	
 	this->num_animals	=	num_animals;
@@ -48,18 +57,34 @@ void population::reset(unsigned int num_animals, unsigned int num_food, unsigned
 
 void population::assign_animals()
 {
-	unsigned int i;
-	vector<NEAT::Organism*>::iterator it;
+	vector<NEAT::Species*>::iterator si;
+	vector<NEAT::Organism*>::iterator oi;
 	animal a;
 	
 	this->animals.clear();
-	for(i = 0, it = this->pop->organisms.begin(); i < this->num_animals && it != this->pop->organisms.end(); i++, it++)
+	
+	if(this->pop->species.size() > 0)
 	{
-		a.reset((*it));
-		a.x	=	0;
-		a.y	=	0;
-		a.z	=	0;
-		this->animals.push_back(a);
+		for(si = this->pop->species.begin(); si != this->pop->species.end(); si++)
+		{
+			if((*si)->organisms.size() == 0)
+			{
+				continue;
+			}
+			
+			for(oi = (*si)->organisms.begin(); oi != (*si)->organisms.end(); oi++)
+			{
+				a.reset((*oi));
+				a.x	=	0;
+				a.y	=	0;
+				a.z	=	0;
+				this->animals.push_back(a);
+			}
+		}
+	}
+	else
+	{
+		this->reset();
 	}
 }
 
@@ -70,21 +95,43 @@ void population::run()
 
 unsigned int population::step()
 {
+	unsigned int i;
+	bool has_fitness;
+	double angle_diff;
 	animal *a	=	&this->animals[this->cur_animal];
 	vector<double> fstats;
+	vector<NEAT::Organism*>::iterator oi;
 	
 	if(!this->paused)
 	{
 		fstats	=	this->get_current_animals_closest_food_stats();
 		a->inputs.clear();
-		//cout << fstats[0] << " " << fstats[1] << " " << (a->direction * 360) << endl;
-		a->inputs.push_back(a->direction);
-		a->inputs.push_back(fstats[0]);		// angle
-		a->inputs.push_back(fstats[1]);		// distance
+		
+		angle_diff		=	(fstats[0] - a->direction);
+		
+		// make angle diff never greater than 180
+		if(angle_diff > 180)
+		{
+			angle_diff	-=	360;
+		}
+		else if(-angle_diff > 180)
+		{
+			angle_diff	+=	360;
+		}
+		
+		//cout << angle_diff << endl;
+		
+		// make it between -1 and 1
+		angle_diff	=	(angle_diff / 180);
+		
+		//cout << angle_diff << endl;
+		
+		a->inputs.push_back(angle_diff);
+		//a->inputs.push_back(a->speed);		// distance
 		a->run();
+		
+		this->epoch++;
 	}
-	
-	this->epoch++;
 	
 	if(this->epoch >= this->num_epochs)
 	{
@@ -93,10 +140,38 @@ unsigned int population::step()
 		
 		if(this->cur_animal == 0)
 		{
-			this->generation++;
+			has_fitness	=	false;
+			for(oi = this->pop->organisms.begin(); oi != this->pop->organisms.end(); oi++)
+			{
+				if((*oi)->fitness >= 1)
+				{
+					has_fitness	=	true;
+					break;
+				}
+			}
+			
+			if(!has_fitness)
+			{
+				cout << "\nAll organisms died, lol. Starting over...\n";
+				this->reset();
+				return 0;
+			}
+			
 			this->pop->epoch(this->generation);
+			
+			if(this->pop->organisms.size() == 0)
+			{
+				this->reset();
+			}
+			
 			this->assign_animals();
+			this->generation++;
 		}
+	}
+	
+	for(i = 0; i < POP_DELAY; i++)
+	{
+		cout << "";
 	}
 	
 	return this->cur_animal;
@@ -110,6 +185,7 @@ void population::display()
 	
 	a	=	&this->animals[this->cur_animal];
 	draw::square3(a->x, a->y, a->z, .04, 0, 0, 0);
+	draw::line3(a->x, a->y, a->z, a->x + (.1 * cos(a->direction * (PI / 180))), a->y + (.1 * sin(a->direction * (PI / 180))), 0, 0, 0, 0);
 	
 	for(i = 0; i < this->num_food; i++)
 	{
@@ -134,7 +210,7 @@ vector<double> population::get_current_animals_closest_food_stats()
 {
 	vector<double> output;
 	unsigned int i, fidx = 0;
-	int neg;
+	int negx, negy;
 	double angle, tmpdist, dist	=	99999;
 	animal *a	=	&this->animals[this->cur_animal];
 	food *f;
@@ -159,10 +235,24 @@ vector<double> population::get_current_animals_closest_food_stats()
 		}
 	}
 	
-	neg		=	a->y - this->foods[fidx].y < 0 ? -1 : 1;
-	angle	=	asin(-(this->foods[fidx].x - a->x) / dist) * neg;
-	angle	=	((angle * (180 / PI)) + 180);
-	angle	=	angle / 360;
+	negx	=	a->x - this->foods[fidx].x < 0 ? -1 : 1;
+	negy	=	a->y - this->foods[fidx].y < 0 ? -1 : 1;
+	//angle	=	asin((this->foods[fidx].x - a->x) / dist) * neg;
+	//angle	=	((angle * (180 / PI)));
+	
+	angle	=	atan((this->foods[fidx].y - a->y) / (this->foods[fidx].x - a->x));
+	angle	=	angle * (180 / PI);
+	
+	// our angle needs to be adjusted between 0 and 360 vs -90 and 90. this is done by testing which quadrants
+	// the food is in comparison to the animal. works well.
+	if((angle < 0 && negy < 0) || (angle > 0 && negx > 0))
+	{
+		angle	=	angle + 180;
+	}
+	else if(angle < 0 && negy > 0)
+	{
+		angle	=	360 + angle;
+	}
 	
 	output.push_back(angle);
 	output.push_back(dist);
