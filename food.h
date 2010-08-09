@@ -11,6 +11,7 @@ public:
 	~food();
 	
 	void reset();
+	void remove();
 };
 
 #endif /* _NN_FOOD_H */

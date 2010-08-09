@@ -318,7 +318,6 @@ bool Population::speciate() {
 			comporg=(*curspecies)->first();
 			while((comporg!=0)&&
 				(curspecies!=species.end())) {
-
 					if ((((*curorg)->gnome)->compatibility(comporg->gnome))<NEAT::compat_threshold) {
 
 						//Found compatible species, so add this organism to it
@@ -678,7 +677,7 @@ bool Population::epoch(int generation) {
 			one_tenth_stolen=NEAT::babies_stolen/10;
 
 			//Don't give to dying species even if they are champs
-			while(((*curspecies)->last_improved()>NEAT::dropoff_age)&&(curspecies!=sorted_species.end()))
+			while((curspecies!=sorted_species.end()) && ((*curspecies)->last_improved()>NEAT::dropoff_age))
 				++curspecies;
 
 			//Concentrate A LOT on the number one species
@@ -698,7 +697,7 @@ bool Population::epoch(int generation) {
 			}
 
 			//Don't give to dying species even if they are champs
-			while(((*curspecies)->last_improved()>NEAT::dropoff_age)&&(curspecies!=sorted_species.end()))
+			while((curspecies!=sorted_species.end()) && ((*curspecies)->last_improved()>NEAT::dropoff_age))
 				++curspecies;
 
 			if ((curspecies!=sorted_species.end())) {
@@ -713,7 +712,7 @@ bool Population::epoch(int generation) {
 			}
 
 			//Don't give to dying species even if they are champs
-			while(((*curspecies)->last_improved()>NEAT::dropoff_age)&&(curspecies!=sorted_species.end()))
+			while((curspecies!=sorted_species.end()) && ((*curspecies)->last_improved()>NEAT::dropoff_age))
 				++curspecies;
 
 			if (curspecies!=sorted_species.end())
@@ -727,50 +726,50 @@ bool Population::epoch(int generation) {
 
 				}
 
-				//Don't give to dying species even if they are champs
-				while(((*curspecies)->last_improved()>NEAT::dropoff_age)&&(curspecies!=sorted_species.end()))
-					++curspecies;
+			//Don't give to dying species even if they are champs
+			while((curspecies!=sorted_species.end()) && ((*curspecies)->last_improved()>NEAT::dropoff_age))
+				++curspecies;
 
-				while((stolen_babies>0)&&
-					(curspecies!=sorted_species.end())) {
-						//Randomize a little which species get boosted by a super champ
+			while((stolen_babies>0)&&
+				(curspecies!=sorted_species.end())) {
+					//Randomize a little which species get boosted by a super champ
 
-						if (randfloat()>0.1)
-							if (stolen_babies>3) {
-								(*(((*curspecies)->organisms).begin()))->super_champ_offspring=3;
-								(*curspecies)->expected_offspring+=3;
-								stolen_babies-=3;
-								//cout<<"Gave 3 babies to Species "<<(*curspecies)->id<<endl;
-							}
-							else {
-								//cout<<"3 or less babies available"<<endl;
-								(*(((*curspecies)->organisms).begin()))->super_champ_offspring=stolen_babies;
-								(*curspecies)->expected_offspring+=stolen_babies;
-								//cout<<"Gave "<<stolen_babies<<" babies to Species "<<(*curspecies)->id<<endl;
-								stolen_babies=0;
+					if (randfloat()>0.1)
+						if (stolen_babies>3) {
+							(*(((*curspecies)->organisms).begin()))->super_champ_offspring=3;
+							(*curspecies)->expected_offspring+=3;
+							stolen_babies-=3;
+							//cout<<"Gave 3 babies to Species "<<(*curspecies)->id<<endl;
+						}
+						else {
+							//cout<<"3 or less babies available"<<endl;
+							(*(((*curspecies)->organisms).begin()))->super_champ_offspring=stolen_babies;
+							(*curspecies)->expected_offspring+=stolen_babies;
+							//cout<<"Gave "<<stolen_babies<<" babies to Species "<<(*curspecies)->id<<endl;
+							stolen_babies=0;
 
-							}
+						}
 
-							curspecies++;
+						curspecies++;
 
-							//Don't give to dying species even if they are champs
-							while((curspecies!=sorted_species.end())&&((*curspecies)->last_improved()>NEAT::dropoff_age))
-								++curspecies;
+						//Don't give to dying species even if they are champs
+						while((curspecies!=sorted_species.end())&&((*curspecies)->last_improved()>NEAT::dropoff_age))
+							++curspecies;
 
-					}
+				}
 
-					//cout<<"Done giving back babies"<<endl;
+				//cout<<"Done giving back babies"<<endl;
 
-					//If any stolen babies aren't taken, give them to species #1's champ
-					if (stolen_babies>0) {
+				//If any stolen babies aren't taken, give them to species #1's champ
+				if (stolen_babies>0) {
 
-						//cout<<"Not all given back, giving to best Species"<<endl;
+					//cout<<"Not all given back, giving to best Species"<<endl;
 
-						curspecies=sorted_species.begin();
-						(*(((*curspecies)->organisms).begin()))->super_champ_offspring+=stolen_babies;
-						(*curspecies)->expected_offspring+=stolen_babies;
-						stolen_babies=0;
-					}
+					curspecies=sorted_species.begin();
+					(*(((*curspecies)->organisms).begin()))->super_champ_offspring+=stolen_babies;
+					(*curspecies)->expected_offspring+=stolen_babies;
+					stolen_babies=0;
+				}
 
 	}
 

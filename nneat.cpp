@@ -3,6 +3,7 @@
 #include <GL/glut.h>
 #include <math.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 using namespace std;
 
@@ -15,6 +16,11 @@ struct {
 	float lx, ly, lz;
 	float anglex, angley, anglez;
 } camera;
+
+bool fast		=	false;
+bool fast_wait	=	true;
+pthread_mutex_t mtx_fast		=	PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mtx_fast_wait	=	PTHREAD_MUTEX_INITIALIZER;
 
 population pop;
 
@@ -57,14 +63,19 @@ void key_cb(unsigned char key, int x, int y)
 			// quit
 			exit(0);
 			break;
+		case 'f':
+			pthread_mutex_lock(&mtx_fast);
+			fast	=	fast ? false : true;
+			pthread_mutex_unlock(&mtx_fast);
+			break;
 		case 'R':
 			// intentionally don't break so the screen resets
 			pop.reset();
 		case 'r':
 			// reset the view
-			camera.x	=	G_INITIAL_X;
-			camera.y	=	G_INITIAL_Y;
-			camera.z	=	G_INITIAL_Z;
+			camera.x	=	config::graphics::initial_x;
+			camera.y	=	config::graphics::initial_y;
+			camera.z	=	config::graphics::initial_z;
 			
 			glLoadIdentity();
 			
@@ -84,8 +95,10 @@ void key_cb(unsigned char key, int x, int y)
 			break;
 		case 'k':
 			// "kill" the current animal (set its fitness to 0 and give it no more iterations)
-			pop.animals[pop.cur_animal].organism->fitness	=	0;
-			pop.epoch	=	POP_NUM_EPOCHS + 1;
+			pop.kill_current();
+			break;
+		case 'n':
+			pop.tick	=	config::population::num_ticks + 1;
 			break;
 		case 'p':
 			pop.pause(2);
@@ -202,56 +215,58 @@ void display_cb_bug()
 	
 	glLoadIdentity();
 	
-	// run the network (updates all neurons and draws them)
-	pop.step();
 	pop.display();
 	
-	//cout << pop.epoch << " " << pop.cur_animal << "\n";
+	pthread_mutex_lock(&mtx_fast_wait);
+	fast_wait	=	false;
+	pthread_mutex_unlock(&mtx_fast_wait);
 	
 	// swap to our buffer and show the network we just built
 	glutSwapBuffers();
 	glutPostRedisplay();
 }
 
-int main_(int argc, char ** argv)
+void *pop_process(void *val)
 {
-	//NEAT::Genome *g		=	new NEAT::Genome(0, 3, 2, 1, 32, true, 1);
-	NEAT::Genome *g		=	new NEAT::Genome(3, 2, 0, 0);
-	NEAT::Population *p	=	new NEAT::Population(g, POP_NUM_ANIMALS);
-	vector<NEAT::Species*>::iterator si;
-	vector<NEAT::Organism*>::iterator oi;
-	
-	//unsigned int i;
-	
-	for(oi = p->organisms.begin(); oi != p->organisms.end(); oi++)
+	bool l_fast;
+	bool l_fast_wait;
+	while(1)
 	{
-		(*oi)->fitness	=	(int)(RAND * 10);
+		pthread_mutex_lock(&mtx_fast);
+		l_fast	=	fast;
+		pthread_mutex_unlock(&mtx_fast);
+		
+		if(!l_fast)
+		{
+			pthread_mutex_lock(&mtx_fast_wait);
+			l_fast_wait	=	fast_wait;
+			pthread_mutex_unlock(&mtx_fast_wait);
+			
+			if(l_fast_wait)
+			{
+				continue;
+			}
+			
+			pthread_mutex_lock(&mtx_fast_wait);
+			fast_wait	=	true;
+			pthread_mutex_unlock(&mtx_fast_wait);
+		}
+		pop.step();
 	}
-	
-	p->epoch(1);
-	
-	cout << "org size: " << p->organisms.size() << "\n";
-	
-	cout << "Gen 1 finished\n";
-	
-	delete g;
-	delete p;
-	
-	return 0;
 }
-
 
 int main(int argc, char ** argv)
 {
-	int win, bugwin;
+	int win, bugwin, t;
+	pthread_t process;
 	
-	camera.x	=	G_INITIAL_X;
-	camera.y	=	G_INITIAL_Y;
-	camera.z	=	G_INITIAL_Z;
+	camera.x	=	config::graphics::initial_x;
+	camera.y	=	config::graphics::initial_y;
+	camera.z	=	config::graphics::initial_z;
 	
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowSize(G_WIN_X, G_WIN_Y);
+	glutInitWindowSize(config::graphics::win_x, config::graphics::win_y);
 	glutInitWindowPosition(20, 20);
 	
 	glutIdleFunc(idle_cb);
@@ -277,13 +292,15 @@ int main(int argc, char ** argv)
 	//glEnable(GL_COLOR_MATERIAL);
 	//glEnable(GL_LIGHTING);
 	
-	bugwin	=	glutCreateSubWindow(win, 0, 0, G_BUG_WIN_X, G_BUG_WIN_Y);
+	bugwin	=	glutCreateSubWindow(win, 0, 0, config::graphics::bug_win_x, config::graphics::bug_win_y);
 	glClearColor(1, 1, 1, 0);
 	glutDisplayFunc(display_cb_bug);
 	
-	pop.reset(POP_NUM_ANIMALS, POP_NUM_FOOD, POP_NUM_EPOCHS);
+	pop.reset(config::population::num_animals, config::population::num_food, config::population::num_ticks);
 	
+	t	=	pthread_create(&process, NULL, pop_process, (void*)NULL);
 	glutMainLoop();
+	pthread_join(process, NULL);
 	
 	return 0;
 }

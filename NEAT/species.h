@@ -70,9 +70,8 @@ namespace NEAT {
 		double count_offspring(double skim);
 
 		//Compute generations since last improvement
-		int last_improved() {
-			return age-age_of_last_improvement;
-		}
+		int last_improved();
+		int last_improved(int);
 
 		//Remove an organism from Species
 		bool remove_org(Organism *org);

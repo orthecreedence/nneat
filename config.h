@@ -4,45 +4,6 @@
 #include <stdlib.h>
 
 // ----------------------------------------
-// graphics settings
-// ----------------------------------------
-#define G_WIN_X			1024		// x value for overall window size
-#define G_WIN_Y			768			// y value for overall window size
-#define G_SCR_X			8			// x value for operational size of network
-#define G_SCR_Y			12			// y value for operational size of network
-#define G_SCR_Z			0			// z value for screen
-#define G_INITIAL_X		0
-#define G_INITIAL_Y		0
-#define G_INITIAL_Z		-G_SCR_Y * 1.6
-#define G_NEURON_SIZE	.15			// size in pixels of neuron
-
-#define G_BUG_WIN_X		300
-#define G_BUG_WIN_Y		300
-
-// ----------------------------------------
-// population settings
-// ----------------------------------------
-#define POP_NUM_ANIMALS				12
-#define POP_NUM_FOOD				40
-#define POP_NUM_EPOCHS				12000
-#define POP_DELAY					0000
-
-#define ANIMAL_MAX_TURN_ANGLE		1
-
-// ----------------------------------------
-// network settings
-// ----------------------------------------
-#define NET_NUM_INPUTS				1
-#define NET_NUM_HIDDEN				4
-#define NET_NUM_OUTPUTS				1
-#define NET_GENOME_TYPE				2	// 0 - Fully linked, no hidden nodes 1 - Fully linked, one hidden node splitting each link 2 - Fully connected with a hidden layer, recurrent 
-
-
-// ----------------------------------------
-// neuron settings
-// ----------------------------------------
-
-// ----------------------------------------
 // basic math/helpers
 // ----------------------------------------
 #define RAND (rand() / (double)RAND_MAX)
@@ -51,5 +12,63 @@
 #define RAND_BIN_NEG (int)((RAND_BIN * 2) - 1)
 
 #define PI			3.141592654
+
+class config
+{
+public:
+	// graphics settings
+	struct graphics
+	{
+	public:
+		static unsigned int win_x, win_y;
+		static unsigned int scr_x, scr_y, scr_z;
+		static unsigned int bug_win_x, bug_win_y;
+		
+		static float initial_x, initial_y, initial_z;
+	};
+	
+	// population settings
+	struct population
+	{
+		static unsigned int num_animals;
+		static unsigned int num_food;
+		static unsigned int num_ticks;
+		static unsigned int delay;
+		static bool parallel_process;
+	};
+	
+	// animal settings
+	struct animal
+	{
+		static unsigned int track_n_foods;
+		static unsigned int track_n_animals;
+		
+		static float fitness_run_penalty;
+		static float fitness_shock_penalty;
+		
+		static bool shocking;
+		static float shock_threshold;
+		static unsigned int frozen_ticks;
+		
+		static float max_turn_angle;
+		
+		static float size;
+	};
+	
+	// food settings
+	struct food
+	{
+		static float size;
+	};
+	
+	// network settings
+	struct network
+	{
+		static unsigned int num_inputs;
+		static unsigned int num_hidden;
+		static unsigned int num_outputs;
+		static unsigned short int genome_type;
+	};
+};
 
 #endif /* _NN_CONFIG_H */

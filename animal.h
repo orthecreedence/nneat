@@ -15,6 +15,8 @@ public:
 	
 	double direction;
 	double speed;
+	bool shock;
+	unsigned int stunned;
 	
 	animal();
 	~animal();

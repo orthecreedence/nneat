@@ -404,6 +404,16 @@ double Species::count_offspring(double skim) {
 
 }
 
+int Species::last_improved()
+{
+	return age - age_of_last_improvement;
+}
+
+int Species::last_improved(int id)
+{
+	return age - age_of_last_improvement;
+}
+
 bool Species::reproduce(int generation, Population *pop,std::vector<Species*> &sorted_species) {
 	int count;
 	std::vector<Organism*>::iterator curorg;
