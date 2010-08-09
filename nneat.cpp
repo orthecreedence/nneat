@@ -11,15 +11,21 @@ using namespace std;
 #include "draw.h"
 #include "population.h"
 
+#define POP_CTRL_RESET		1
+#define POP_CTRL_PAUSE		2
+#define POP_CTRL_NEXT		3
+#define POP_CTRL_KILL		4
+#define POP_CTRL_FASTMODE	5
+
 struct {
 	float x, y, z;
 	float lx, ly, lz;
 	float anglex, angley, anglez;
 } camera;
 
-bool fast		=	false;
+unsigned int psignal	=	0;
 bool fast_wait	=	true;
-pthread_mutex_t mtx_fast		=	PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mtx_psignal		=	PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mtx_fast_wait	=	PTHREAD_MUTEX_INITIALIZER;
 
 population pop;
@@ -64,13 +70,15 @@ void key_cb(unsigned char key, int x, int y)
 			exit(0);
 			break;
 		case 'f':
-			pthread_mutex_lock(&mtx_fast);
-			fast	=	fast ? false : true;
-			pthread_mutex_unlock(&mtx_fast);
+			pthread_mutex_lock(&mtx_psignal);
+			psignal	=	POP_CTRL_FASTMODE;
+			pthread_mutex_unlock(&mtx_psignal);
 			break;
 		case 'R':
 			// intentionally don't break so the screen resets
-			pop.reset();
+			pthread_mutex_lock(&mtx_psignal);
+			psignal	=	POP_CTRL_RESET;
+			pthread_mutex_unlock(&mtx_psignal);
 		case 'r':
 			// reset the view
 			camera.x	=	config::graphics::initial_x;
@@ -95,13 +103,19 @@ void key_cb(unsigned char key, int x, int y)
 			break;
 		case 'k':
 			// "kill" the current animal (set its fitness to 0 and give it no more iterations)
-			pop.kill_current();
+			pthread_mutex_lock(&mtx_psignal);
+			psignal	=	POP_CTRL_KILL;
+			pthread_mutex_unlock(&mtx_psignal);
 			break;
 		case 'n':
-			pop.tick	=	config::population::num_ticks + 1;
+			pthread_mutex_lock(&mtx_psignal);
+			psignal	=	POP_CTRL_NEXT;
+			pthread_mutex_unlock(&mtx_psignal);
 			break;
 		case 'p':
-			pop.pause(2);
+			pthread_mutex_lock(&mtx_psignal);
+			psignal	=	POP_CTRL_PAUSE;
+			pthread_mutex_unlock(&mtx_psignal);
 			break;
 	}
 }
@@ -228,14 +242,12 @@ void display_cb_bug()
 
 void *pop_process(void *val)
 {
-	bool l_fast;
+	unsigned int l_psignal;
+	bool l_fast	=	false;
 	bool l_fast_wait;
+	
 	while(1)
 	{
-		pthread_mutex_lock(&mtx_fast);
-		l_fast	=	fast;
-		pthread_mutex_unlock(&mtx_fast);
-		
 		if(!l_fast)
 		{
 			pthread_mutex_lock(&mtx_fast_wait);
@@ -252,6 +264,33 @@ void *pop_process(void *val)
 			pthread_mutex_unlock(&mtx_fast_wait);
 		}
 		pop.step();
+		
+		pthread_mutex_lock(&mtx_psignal);
+		l_psignal	=	psignal;
+		pthread_mutex_unlock(&mtx_psignal);
+		
+		switch(l_psignal)
+		{
+			case POP_CTRL_RESET:
+				pop.reset();
+				break;
+			case POP_CTRL_PAUSE:
+				pop.pause(2);
+				break;
+			case POP_CTRL_NEXT:
+				pop.tick	=	config::population::num_ticks + 1;
+				break;
+			case POP_CTRL_KILL:
+				pop.kill_current();
+				break;
+			case POP_CTRL_FASTMODE:
+				l_fast	=	l_fast ? false : true;
+				break;
+		}
+		
+		pthread_mutex_lock(&mtx_psignal);
+		psignal	=	0;
+		pthread_mutex_unlock(&mtx_psignal);
 	}
 }
 
