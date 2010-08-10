@@ -139,7 +139,7 @@ unsigned int population::step()
 		}
 		
 		// make sure the animal knows whether or not it's chewing.
-		a->inputs.push_back(a->chewing / config::animal::chew_ticks);
+		a->inputs.push_back(a->chewing > 0 ? 1 : 0);
 		
 		//cout << "----\n";
 		a->run();

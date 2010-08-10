@@ -18,24 +18,24 @@ float config::graphics::initial_z			=	-config::graphics::scr_y * 1.6;
 // population settings
 // ----------------------------------------
 unsigned int config::population::num_animals		=	12;
-unsigned int config::population::num_food			=	16;
+unsigned int config::population::num_food			=	24;
 unsigned int config::population::gen_before_famine	=	20;
 float config::population::famine_prob				=	.1;
-float config::population::famine_percent			=	.4;
+float config::population::famine_percent			=	.25;
 unsigned int config::population::num_ticks			=	1600;
 unsigned int config::population::delay				=	0;
-bool config::population::parallel_process			=	true;
+bool config::population::parallel_process			=	false;
 
 // ----------------------------------------
 // animal settings
 // ----------------------------------------
 unsigned int config::animal::track_n_foods		=	6;
-unsigned int config::animal::track_n_animals	=	6;
+unsigned int config::animal::track_n_animals	=	0;
 float config::animal::max_food_ingestion		=	1;
 unsigned int config::animal::chew_ticks			=	10;
 float config::animal::fitness_run_penalty		=	0;
 float config::animal::fitness_shock_penalty		=	.01;
-bool config::animal::shocking					=	true;
+bool config::animal::shocking					=	false;
 float config::animal::shock_threshold			=	.95;
 unsigned int config::animal::frozen_ticks		=	100;
 float config::animal::max_turn_angle			=	30;
