@@ -11,6 +11,7 @@ public:
 	~food();
 	
 	void reset();
+	void reset(bool disabled);
 	void remove();
 };
 

@@ -2,6 +2,7 @@
 #define _NN_ANIMAL_H
 
 #include <vector>
+#include "food.h"
 #include "NEAT/organism.h"
 
 class animal
@@ -17,12 +18,14 @@ public:
 	double speed;
 	bool shock;
 	unsigned int stunned;
+	unsigned int chewing;
 	
 	animal();
 	~animal();
 	
 	void reset(NEAT::Organism *);
 	void reset();
+	void eat(food *);
 	void run();
 };
 

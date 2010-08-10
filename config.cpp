@@ -17,17 +17,22 @@ float config::graphics::initial_z			=	-config::graphics::scr_y * 1.6;
 // ----------------------------------------
 // population settings
 // ----------------------------------------
-unsigned int config::population::num_animals	=	12;
-unsigned int config::population::num_food		=	30;
-unsigned int config::population::num_ticks		=	1600;
-unsigned int config::population::delay			=	0;
-bool config::population::parallel_process		=	true;
+unsigned int config::population::num_animals		=	12;
+unsigned int config::population::num_food			=	16;
+unsigned int config::population::gen_before_famine	=	20;
+float config::population::famine_prob				=	.1;
+float config::population::famine_percent			=	.4;
+unsigned int config::population::num_ticks			=	1600;
+unsigned int config::population::delay				=	0;
+bool config::population::parallel_process			=	true;
 
 // ----------------------------------------
 // animal settings
 // ----------------------------------------
-unsigned int config::animal::track_n_foods		=	10;
-unsigned int config::animal::track_n_animals	=	10;
+unsigned int config::animal::track_n_foods		=	6;
+unsigned int config::animal::track_n_animals	=	6;
+float config::animal::max_food_ingestion		=	1;
+unsigned int config::animal::chew_ticks			=	10;
 float config::animal::fitness_run_penalty		=	0;
 float config::animal::fitness_shock_penalty		=	.01;
 bool config::animal::shocking					=	true;
@@ -39,12 +44,13 @@ float config::animal::size						=	.04;
 // ----------------------------------------
 // food settings
 // ----------------------------------------
-float config::food::size		=	.02;
+float config::food::size			=	.02;
+float config::food::start_amount	=	4;
 
 // ----------------------------------------
 // network settings
 // ----------------------------------------
-unsigned int config::network::num_inputs		=	(3 * config::animal::track_n_foods) + (5 * config::animal::track_n_animals);
+unsigned int config::network::num_inputs		=	1 + (3 * config::animal::track_n_foods) + (5 * config::animal::track_n_animals);
 unsigned int config::network::num_hidden		=	(int)(config::network::num_inputs / 4) + 4;
 unsigned int config::network::num_outputs		=	3;
 unsigned short int config::network::genome_type	=	2;

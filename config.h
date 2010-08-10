@@ -32,6 +32,9 @@ public:
 	{
 		static unsigned int num_animals;
 		static unsigned int num_food;
+		static unsigned int gen_before_famine;
+		static float famine_prob;
+		static float famine_percent;
 		static unsigned int num_ticks;
 		static unsigned int delay;
 		static bool parallel_process;
@@ -42,6 +45,9 @@ public:
 	{
 		static unsigned int track_n_foods;
 		static unsigned int track_n_animals;
+		
+		static float max_food_ingestion;
+		static unsigned int chew_ticks;
 		
 		static float fitness_run_penalty;
 		static float fitness_shock_penalty;
@@ -59,6 +65,7 @@ public:
 	struct food
 	{
 		static float size;
+		static float start_amount;
 	};
 	
 	// network settings

@@ -2,6 +2,7 @@
 #include <math.h>
 
 #include "animal.h"
+#include "food.h"
 #include "config.h"
 #include "NEAT/organism.h"
 #include "NEAT/network.h"
@@ -28,6 +29,22 @@ void animal::reset()
 	this->speed		=	0;
 	this->shock		=	false;
 	this->stunned	=	0;
+	this->chewing	=	0;
+}
+
+void animal::eat(food *f)
+{
+	double f_diff;
+	if(this->chewing > 0)
+	{
+		return;
+	}
+	
+	f_diff			=	f->amount > config::animal::max_food_ingestion ? config::animal::max_food_ingestion : f->amount;
+	f->amount		-=	f_diff;
+	
+	this->chewing	=	config::animal::chew_ticks;
+	this->organism->fitness	+=	f_diff;
 }
 
 void animal::run()
@@ -35,6 +52,11 @@ void animal::run()
 	unsigned int i;
 	double inputs[this->inputs.size()];
 	NEAT::Network *net;
+	
+	if(this->chewing > 0)
+	{
+		this->chewing--;
+	}
 	
 	if(this->stunned > 0)
 	{

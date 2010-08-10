@@ -115,7 +115,9 @@ unsigned int population::step()
 		fstats	=	this->get_current_animals_closest_food_stats();
 		astats	=	this->get_current_animals_closest_animals();
 		
+		// clear out our inputs for the current animal
 		a->inputs.clear();
+		
 		for(f = 0; f < config::animal::track_n_foods; f++)
 		{
 			//cout << this->cur_animal << ": " << fstats[(f * 3)] << " " << fstats[f + 1] << " " << fstats[f + 2] << endl;
@@ -135,6 +137,9 @@ unsigned int population::step()
 			a->inputs.push_back(astats[(f * 3) + 3]);		// neighbor speed
 			a->inputs.push_back(astats[(f * 3) + 4]);		// is neighbor "shocking"?
 		}
+		
+		// make sure the animal knows whether or not it's chewing.
+		a->inputs.push_back(a->chewing / config::animal::chew_ticks);
 		
 		//cout << "----\n";
 		a->run();
@@ -174,6 +179,7 @@ void population::epoch()
 {
 	unsigned int i;
 	bool has_fitness	=	false;
+	bool famine			=	false;
 	vector<NEAT::Organism*>::iterator oi;
 	
 	for(oi = this->pop->organisms.begin(); oi != this->pop->organisms.end(); oi++)
@@ -199,9 +205,22 @@ void population::epoch()
 		this->reset();
 	}
 	
+	if(RAND < config::population::famine_prob && this->generation > config::population::gen_before_famine)
+	{
+		famine	=	true;
+		cout << "\nFAMINE!!!\n";
+	}
+	
 	for(i = 0; i < this->num_food; i++)
 	{
-		this->foods[i].reset();
+		if(famine && i >= (config::population::famine_percent * this->num_food))
+		{
+			this->foods[i].reset(true);
+		}
+		else
+		{
+			this->foods[i].reset();
+		}
 	}
 	
 	this->assign_animals();
@@ -230,10 +249,13 @@ vector<double> population::get_current_animals_closest_food_stats()
 		
 		if(tmpdist < config::animal::size)
 		{
-			f->remove();
-			a->organism->fitness	+=	f->amount;
-			i--;
-			continue;
+			a->eat(f);
+			if(f->amount <= 0)
+			{
+				i--;
+				f->remove();
+				continue;
+			}
 		}
 		
 		distpair.first	=	tmpdist;
@@ -252,7 +274,7 @@ vector<double> population::get_current_animals_closest_food_stats()
 		distpair	=	(*nearby_i);
 		fidx		=	distpair.second;
 		dist		=	distpair.first;
-		f_amount	=	this->foods[fidx].amount;
+		f_amount	=	this->foods[fidx].amount / config::food::start_amount;
 		
 		angle_diff	=	this->angle_diff(this->foods[fidx].x, this->foods[fidx].y, a->x, a->y, a->direction);
 		
@@ -432,7 +454,7 @@ void population::display()
 			g	=	0;
 		}
 		
-		draw::square3(f->x, f->y, f->z, config::food::size, r, g, 0);
+		draw::square3(f->x, f->y, f->z, config::food::size * ((f->amount + 1) / config::food::start_amount), r, g, 0);
 	}
 }
 

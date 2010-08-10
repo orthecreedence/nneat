@@ -11,11 +11,14 @@ using namespace std;
 #include "draw.h"
 #include "population.h"
 
+#define TIMERMSECS	20
+
 #define POP_CTRL_RESET		1
 #define POP_CTRL_PAUSE		2
 #define POP_CTRL_NEXT		3
 #define POP_CTRL_KILL		4
 #define POP_CTRL_FASTMODE	5
+#define POP_CTRL_EXIT		6
 
 struct {
 	float x, y, z;
@@ -23,6 +26,7 @@ struct {
 	float anglex, angley, anglez;
 } camera;
 
+unsigned int etime1, last_etime1, etime2, last_etime2;
 unsigned int psignal	=	0;
 bool fast_wait	=	true;
 pthread_mutex_t mtx_psignal		=	PTHREAD_MUTEX_INITIALIZER;
@@ -67,6 +71,9 @@ void key_cb(unsigned char key, int x, int y)
 			break;
 		case 'q':
 			// quit
+			pthread_mutex_lock(&mtx_psignal);
+			psignal	=	POP_CTRL_EXIT;
+			pthread_mutex_unlock(&mtx_psignal);
 			exit(0);
 			break;
 		case 'f':
@@ -197,6 +204,41 @@ void mouse_drag_cb(int x, int y)
 {
 }
 
+bool check_delay(int timer)
+{
+	int etime, last_etime;
+	bool ret	=	false;
+	
+	if(timer == 1)
+	{
+		etime		=	etime1;
+		last_etime	=	last_etime1;
+	}
+	else
+	{
+		etime		=	etime2;
+		last_etime	=	last_etime2;
+	}
+	
+	etime	=	glutGet(GLUT_ELAPSED_TIME);
+	if(etime - last_etime > TIMERMSECS)
+	{
+		last_etime	=	etime;
+		ret	=	true;
+	}
+	
+	if(timer == 1)
+	{
+		last_etime1	=	last_etime;
+	}
+	else
+	{
+		last_etime2	=	last_etime;
+	}
+	
+	return ret;
+}
+
 void idle_cb()
 {
 	glutPostRedisplay();
@@ -204,6 +246,12 @@ void idle_cb()
 
 void display_net_cb()
 {
+	if(!check_delay(1))
+	{
+		glutPostRedisplay();
+		return;
+	}
+	
 	// clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
@@ -224,6 +272,12 @@ void display_net_cb()
 
 void display_cb_bug()
 {
+	if(!check_delay(2))
+	{
+		glutPostRedisplay();
+		return;
+	}
+	
 	// clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
@@ -243,10 +297,11 @@ void display_cb_bug()
 void *pop_process(void *val)
 {
 	unsigned int l_psignal;
+	bool l_exit	=	false;
 	bool l_fast	=	false;
 	bool l_fast_wait;
 	
-	while(1)
+	while(!l_exit)
 	{
 		if(!l_fast)
 		{
@@ -263,6 +318,7 @@ void *pop_process(void *val)
 			fast_wait	=	true;
 			pthread_mutex_unlock(&mtx_fast_wait);
 		}
+		
 		pop.step();
 		
 		pthread_mutex_lock(&mtx_psignal);
@@ -286,17 +342,22 @@ void *pop_process(void *val)
 			case POP_CTRL_FASTMODE:
 				l_fast	=	l_fast ? false : true;
 				break;
+			case POP_CTRL_EXIT:
+				l_exit	=	true;
+				break;
 		}
 		
 		pthread_mutex_lock(&mtx_psignal);
 		psignal	=	0;
 		pthread_mutex_unlock(&mtx_psignal);
 	}
+	
+	return (void*)NULL;
 }
 
 int main(int argc, char ** argv)
 {
-	int win, bugwin, t;
+	int win, bugwin, pop_thread;
 	pthread_t process;
 	
 	camera.x	=	config::graphics::initial_x;
@@ -309,6 +370,7 @@ int main(int argc, char ** argv)
 	glutInitWindowPosition(20, 20);
 	
 	glutIdleFunc(idle_cb);
+	//glutTimerFunc(TIMERMSECS, idle_cb, 0);
 	
 	win		=	glutCreateWindow("rotate");
 	glClearColor(1, 1, 1, 1);
@@ -337,7 +399,13 @@ int main(int argc, char ** argv)
 	
 	pop.reset(config::population::num_animals, config::population::num_food, config::population::num_ticks);
 	
-	t	=	pthread_create(&process, NULL, pop_process, (void*)NULL);
+	// set our timers
+	etime1		=	0;
+	last_etime1	=	0;
+	etime2		=	0;
+	last_etime2	=	0;
+	
+	pop_thread	=	pthread_create(&process, NULL, pop_process, (void*)NULL);
 	glutMainLoop();
 	pthread_join(process, NULL);
 	

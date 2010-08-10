@@ -19,29 +19,29 @@
 #include <cmath>
 #include <cstring>
 
-double NEAT::trait_param_mut_prob = .1;
-double NEAT::trait_mutation_power = .1; // Power of mutation on a signle trait param 
+double NEAT::trait_param_mut_prob = .04;
+double NEAT::trait_mutation_power = .2; // Power of mutation on a signle trait param 
 double NEAT::linktrait_mut_sig = .2; // Amount that mutation_num changes for a trait change inside a link
-double NEAT::nodetrait_mut_sig = .1; // Amount a mutation_num changes on a link connecting a node that changed its trait 
-double NEAT::weight_mut_power = .2; // The power of a linkweight mutation 
-double NEAT::recur_prob = .1; // Prob. that a link mutation which doesn't have to be recurrent will be made recurrent 
+double NEAT::nodetrait_mut_sig = .2; // Amount a mutation_num changes on a link connecting a node that changed its trait 
+double NEAT::weight_mut_power = .3; // The power of a linkweight mutation 
+double NEAT::recur_prob = .06; // Prob. that a link mutation which doesn't have to be recurrent will be made recurrent 
 double NEAT::disjoint_coeff = .4;
 double NEAT::excess_coeff = .8;
 double NEAT::mutdiff_coeff = .2;
 double NEAT::compat_threshold = .15;
-double NEAT::age_significance = 1.2; // How much does age matter? 
-double NEAT::survival_thresh = 1; // Percent of ave fitness for survival 
-double NEAT::mutate_random_trait_prob = .1;
-double NEAT::mutate_link_trait_prob = .2;
-double NEAT::mutate_node_trait_prob = .2;
-double NEAT::mutate_link_weights_prob = .4;
-double NEAT::mutate_toggle_enable_prob = .1;
-double NEAT::mutate_gene_reenable_prob = .1;
-double NEAT::mutate_add_node_prob = .1;
-double NEAT::mutate_add_link_prob = .1;
-double NEAT::interspecies_mate_rate = .1; // Prob. of a mate being outside species 
-double NEAT::mate_multipoint_prob = .2;     
-double NEAT::mate_multipoint_avg_prob = .2;
+double NEAT::age_significance = .8; // How much does age matter? 
+double NEAT::survival_thresh = 3; // Percent of ave fitness for survival 
+double NEAT::mutate_random_trait_prob = .04;
+double NEAT::mutate_link_trait_prob = .04;
+double NEAT::mutate_node_trait_prob = .04;
+double NEAT::mutate_link_weights_prob = .1;
+double NEAT::mutate_toggle_enable_prob = .01;
+double NEAT::mutate_gene_reenable_prob = .01;
+double NEAT::mutate_add_node_prob = .04;
+double NEAT::mutate_add_link_prob = .04;
+double NEAT::interspecies_mate_rate = .01; // Prob. of a mate being outside species 
+double NEAT::mate_multipoint_prob = .02;     
+double NEAT::mate_multipoint_avg_prob = .02;
 double NEAT::mate_singlepoint_prob = .2;
 double NEAT::mate_only_prob = 0; // Prob. of mating without mutation 
 double NEAT::mutate_only_prob = 0; // Prob. of a non-mating reproduction 
