@@ -30,12 +30,12 @@ bool config::population::parallel_process			=	true;
 // animal settings
 // ----------------------------------------
 unsigned int config::animal::track_n_foods		=	4;
-unsigned int config::animal::track_n_animals	=	3;
+unsigned int config::animal::track_n_animals	=	4;
 float config::animal::max_food_ingestion		=	1;
 unsigned int config::animal::chew_ticks			=	10;
 float config::animal::fitness_run_penalty		=	0;
 float config::animal::fitness_shock_penalty		=	.01;
-bool config::animal::shocking					=	true;
+bool config::animal::shocking					=	false;
 float config::animal::shock_threshold			=	.95;
 unsigned int config::animal::frozen_ticks		=	100;
 float config::animal::max_turn_angle			=	30;
@@ -45,7 +45,7 @@ float config::animal::size						=	.04;
 // food settings
 // ----------------------------------------
 float config::food::size			=	.02;
-float config::food::start_amount	=	4;
+float config::food::start_amount	=	5;
 
 // ----------------------------------------
 // network settings

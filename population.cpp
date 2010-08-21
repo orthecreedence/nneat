@@ -315,10 +315,14 @@ vector<double> population::get_current_animals_closest_animals()
 		pal		=	&this->animals[i];
 		tmpdist	=	pow(pow(a->x - pal->x, 2) + pow(a->y - pal->y, 2) + pow(a->z - pal->z, 2), .5);
 		
-		if(tmpdist < config::animal::size && a->shock)
+		if(tmpdist < .3)
 		{
-			pal->stunned	=	config::animal::frozen_ticks;
-			continue;
+			a->organism->fitness	+=	.004 * (1 - (tmpdist / .3));
+			if(tmpdist < config::animal::size && a->shock)
+			{
+				pal->stunned	=	config::animal::frozen_ticks;
+				continue;
+			}
 		}
 		
 		distpair.first	=	tmpdist;
