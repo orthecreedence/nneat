@@ -21,7 +21,6 @@ public:
 	{
 	public:
 		static unsigned int win_x, win_y;
-		static unsigned int bug_win_x, bug_win_y;
 
 		static float scale_x, scale_y, scale_z;
 		
@@ -46,6 +45,8 @@ public:
 	{
 		static unsigned int track_n_foods;
 		static unsigned int track_n_animals;
+
+		static float speed_constant;
 		
 		static float max_food_ingestion;
 		static unsigned int chew_ticks;

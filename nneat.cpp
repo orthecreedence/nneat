@@ -182,8 +182,6 @@ void resize_cb(int w, int h)
 
 	config::graphics::win_x		=	w;
 	config::graphics::win_y		=	h;
-	config::graphics::bug_win_x	=	config::graphics::win_x;
-	config::graphics::bug_win_y	=	config::graphics::win_y;
 }
 
 void mouse_cb(int button, int state, int x, int y)
@@ -362,7 +360,7 @@ void *pop_process(void *val)
 
 int main(int argc, char ** argv)
 {
-	int win, bugwin, pop_thread;
+	int win, pop_thread;
 	pthread_t process;
 	
 	camera.x	=	config::graphics::initial_x;
@@ -377,9 +375,9 @@ int main(int argc, char ** argv)
 	glutIdleFunc(idle_cb);
 	//glutTimerFunc(TIMERMSECS, idle_cb, 0);
 	
-	win		=	glutCreateWindow("rotate");
+	win		=	glutCreateWindow("bugs");
 	glClearColor(1, 1, 1, 1);
-	glutDisplayFunc(display_net_cb);
+	glutDisplayFunc(display_cb_bug);
 	glutKeyboardFunc(key_cb);
 	glutSpecialFunc(key_sp_cb);
 	glutMouseFunc(mouse_cb);
@@ -397,10 +395,6 @@ int main(int argc, char ** argv)
 	//glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
 	//glEnable(GL_COLOR_MATERIAL);
 	//glEnable(GL_LIGHTING);
-	
-	bugwin	=	glutCreateSubWindow(win, 0, 0, config::graphics::bug_win_x, config::graphics::bug_win_y);
-	glClearColor(1, 1, 1, 0);
-	glutDisplayFunc(display_cb_bug);
 	
 	pop.reset(config::population::num_animals, config::population::num_food, config::population::num_ticks);
 	

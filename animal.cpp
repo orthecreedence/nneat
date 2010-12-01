@@ -87,13 +87,13 @@ void animal::run()
 		this->shock		=	(this->outputs[2] > config::animal::shock_threshold) ? true : false;
 	}
 	
-	this->x			+=	cos(this->direction * (PI / 180)) * this->speed * .02;
-	this->y			+=	sin(this->direction * (PI / 180)) * this->speed * .02;
+	this->x			+=	cos(this->direction * (PI / 180)) * this->speed * config::animal::speed_constant;
+	this->y			+=	sin(this->direction * (PI / 180)) * this->speed * config::animal::speed_constant;
 	
-	if(this->x > 1)		this->x	=	1;
-	if(this->x < -1)	this->x	=	-1;
-	if(this->y > 1)		this->y	=	1;
-	if(this->y < -1)	this->y	=	-1;
+	if(this->x > config::graphics::win_x)	this->x	=	config::graphics::win_x;
+	if(this->x < 0)							this->x	=	0;
+	if(this->y > config::graphics::win_y)	this->y	=	config::graphics::win_y;
+	if(this->y < 0)							this->y	=	0;
 	
 	if(this->direction > 360)	this->direction	=	this->direction - 360;
 	if(this->direction < 0)		this->direction	=	360 + this->direction;

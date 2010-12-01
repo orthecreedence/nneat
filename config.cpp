@@ -3,16 +3,14 @@
 // ----------------------------------------
 // graphics settings
 // ----------------------------------------
-unsigned int config::graphics::win_x		=	800;
+unsigned int config::graphics::win_x		=	600;
 unsigned int config::graphics::win_y		=	600;
-unsigned int config::graphics::bug_win_x	=	config::graphics::win_x;
-unsigned int config::graphics::bug_win_y	=	config::graphics::win_y;
 float config::graphics::initial_x			=	0;
 float config::graphics::initial_y			=	0;
 float config::graphics::initial_z			=	-12 * 1.6;
-float config::graphics::scale_x				=	300 / (float)config::graphics::bug_win_x;		// these two allow arbitrary scaling of the window size
-float config::graphics::scale_y				=	300 / (float)config::graphics::bug_win_y;
-float config::graphics::scale_z				=	300 / (float)config::graphics::bug_win_x;
+float config::graphics::scale_x				=	.1;//300 / (float)config::graphics::bug_win_x;		// these two allow arbitrary scaling of the window size
+float config::graphics::scale_y				=	.1;//300 / (float)config::graphics::bug_win_y;
+float config::graphics::scale_z				=	.1;//300 / (float)config::graphics::bug_win_x;
 
 // ----------------------------------------
 // population settings
@@ -31,6 +29,7 @@ bool config::population::parallel_process			=	true;
 // ----------------------------------------
 unsigned int config::animal::track_n_foods		=	4;
 unsigned int config::animal::track_n_animals	=	4;
+float config::animal::speed_constant			=	1;
 float config::animal::max_food_ingestion		=	1;
 unsigned int config::animal::chew_ticks			=	10;
 float config::animal::fitness_run_penalty		=	0;
@@ -39,12 +38,12 @@ bool config::animal::shocking					=	false;
 float config::animal::shock_threshold			=	.95;
 unsigned int config::animal::frozen_ticks		=	100;
 float config::animal::max_turn_angle			=	30;
-float config::animal::size						=	.04;
+float config::animal::size						=	10;
 
 // ----------------------------------------
 // food settings
 // ----------------------------------------
-float config::food::size			=	.02;
+float config::food::size			=	config::animal::size / 2;
 float config::food::start_amount	=	5;
 
 // ----------------------------------------
