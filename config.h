@@ -21,8 +21,9 @@ public:
 	{
 	public:
 		static unsigned int win_x, win_y;
-		static unsigned int scr_x, scr_y, scr_z;
 		static unsigned int bug_win_x, bug_win_y;
+
+		static float scale_x, scale_y, scale_z;
 		
 		static float initial_x, initial_y, initial_z;
 	};

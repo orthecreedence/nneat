@@ -1,5 +1,6 @@
 #include <GL/glut.h>
 
+#include "config.h"
 #include "draw.h"
 
 draw::draw() {}
@@ -37,40 +38,42 @@ void draw::square(unsigned int x, unsigned int y, unsigned int size, float r, fl
 
 void draw::square3(float x, float y, float z, float size, float r, float g, float b)
 {
-	float half	=	size / 2;
+	float half_x	=	(size / 2) * config::graphics::scale_x;
+	float half_y	=	(size / 2) * config::graphics::scale_y;
+	float half_z	=	(size / 2) * config::graphics::scale_z;
 	glColor3f(r, g, b);
 	
 	glBegin(GL_QUADS);
 	
-	glVertex3f(x - half, y - half, z - half);
-	glVertex3f(x + half, y - half, z - half);
-	glVertex3f(x + half, y + half, z - half);
-	glVertex3f(x - half, y + half, z - half);
+	glVertex3f(x - half_x, y - half_y, z - half_z);
+	glVertex3f(x + half_x, y - half_y, z - half_z);
+	glVertex3f(x + half_x, y + half_y, z - half_z);
+	glVertex3f(x - half_x, y + half_y, z - half_z);
 	
-	glVertex3f(x - half, y - half, z + half);
-	glVertex3f(x + half, y - half, z + half);
-	glVertex3f(x + half, y + half, z + half);
-	glVertex3f(x - half, y + half, z + half);
+	glVertex3f(x - half_x, y - half_y, z + half_z);
+	glVertex3f(x + half_x, y - half_y, z + half_z);
+	glVertex3f(x + half_x, y + half_y, z + half_z);
+	glVertex3f(x - half_x, y + half_y, z + half_z);
 	
-	glVertex3f(x - half, y - half, z - half);
-	glVertex3f(x + half, y - half, z - half);
-	glVertex3f(x + half, y - half, z + half);
-	glVertex3f(x - half, y - half, z + half);
+	glVertex3f(x - half_x, y - half_y, z - half_z);
+	glVertex3f(x + half_x, y - half_y, z - half_z);
+	glVertex3f(x + half_x, y - half_y, z + half_z);
+	glVertex3f(x - half_x, y - half_y, z + half_z);
 	
-	glVertex3f(x - half, y + half, z - half);
-	glVertex3f(x + half, y + half, z - half);
-	glVertex3f(x + half, y + half, z + half);
-	glVertex3f(x - half, y + half, z + half);
+	glVertex3f(x - half_x, y + half_y, z - half_z);
+	glVertex3f(x + half_x, y + half_y, z - half_z);
+	glVertex3f(x + half_x, y + half_y, z + half_z);
+	glVertex3f(x - half_x, y + half_y, z + half_z);
 	
-	glVertex3f(x - half, y - half, z - half);
-	glVertex3f(x - half, y + half, z - half);
-	glVertex3f(x - half, y + half, z + half);
-	glVertex3f(x - half, y - half, z + half);
+	glVertex3f(x - half_x, y - half_y, z - half_z);
+	glVertex3f(x - half_x, y + half_y, z - half_z);
+	glVertex3f(x - half_x, y + half_y, z + half_z);
+	glVertex3f(x - half_x, y - half_y, z + half_z);
 	
-	glVertex3f(x + half, y - half, z - half);
-	glVertex3f(x + half, y + half, z - half);
-	glVertex3f(x + half, y + half, z + half);
-	glVertex3f(x + half, y - half, z + half);
+	glVertex3f(x + half_x, y - half_y, z - half_z);
+	glVertex3f(x + half_x, y + half_y, z - half_z);
+	glVertex3f(x + half_x, y + half_y, z + half_z);
+	glVertex3f(x + half_x, y - half_y, z + half_z);
 	
 	glEnd();
 }

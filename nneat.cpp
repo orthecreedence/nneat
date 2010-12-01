@@ -179,6 +179,11 @@ void resize_cb(int w, int h)
 		0.0, 0.0, -1.0,
 		0.0, 1.0, 0.0
 	);
+
+	config::graphics::win_x		=	w;
+	config::graphics::win_y		=	h;
+	config::graphics::bug_win_x	=	config::graphics::win_x;
+	config::graphics::bug_win_y	=	config::graphics::win_y;
 }
 
 void mouse_cb(int button, int state, int x, int y)

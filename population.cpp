@@ -246,8 +246,14 @@ vector<double> population::get_current_animals_closest_food_stats()
 	{
 		f		=	&this->foods[i];
 		tmpdist	=	pow(pow(a->x - f->x, 2) + pow(a->y - f->y, 2) + pow(a->z - f->z, 2), .5);
+
+		// prevent /0
+		if(tmpdist == 0)
+		{
+			tmpdist	=	.00001f;
+		}
 		
-		if(tmpdist < config::animal::size)
+		if(tmpdist < config::animal::size * config::graphics::scale_x)
 		{
 			a->eat(f);
 			if(f->amount <= 0)
@@ -314,8 +320,14 @@ vector<double> population::get_current_animals_closest_animals()
 		
 		pal		=	&this->animals[i];
 		tmpdist	=	pow(pow(a->x - pal->x, 2) + pow(a->y - pal->y, 2) + pow(a->z - pal->z, 2), .5);
+
+		// prevent /0
+		if(tmpdist == 0)
+		{
+			tmpdist	=	.00001f;
+		}
 		
-		if(tmpdist < .3)
+		if(tmpdist < .3 * config::graphics::scale_x)
 		{
 			a->organism->fitness	+=	.004 * (1 - (tmpdist / .3));
 			if(tmpdist < config::animal::size && a->shock)
@@ -367,6 +379,12 @@ double population::angle_diff(float x1, float y1, float x2, float y2, double dir
 	negx	=	x2 - x1 < 0 ? -1 : 1;
 	negy	=	y2 - y1 < 0 ? -1 : 1;
 	
+	// prevent /0
+	if(x1 - x2 == 0)
+	{
+		x1	+=	.00001;
+	}
+
 	angle	=	atan((y1 - y2) / (x1 - x2));
 	angle	=	angle * (180 / PI);
 	
@@ -431,7 +449,17 @@ void population::display()
 			g	=	a->shock ? 1 : 0;
 			b	=	a->stunned ? 1 : 0;
 			draw::square3(a->x, a->y, a->z, config::animal::size, 0, g, b);
-			draw::line3(a->x, a->y, a->z, a->x + (.1 * cos(a->direction * (PI / 180))), a->y + (.1 * sin(a->direction * (PI / 180))), 0, 0, g, b);
+			draw::line3(
+				a->x,
+				a->y,
+				a->z,
+				a->x + (.1 * cos(a->direction * (PI / 180))) * config::graphics::scale_x,
+				a->y + (.1 * sin(a->direction * (PI / 180))) * config::graphics::scale_y,
+				0,
+				0,
+				g,
+				b
+			);
 		}
 	}
 	else
@@ -440,7 +468,17 @@ void population::display()
 		g	=	a->shock ? 1 : 0;
 		b	=	a->stunned ? 1 : 0;
 		draw::square3(a->x, a->y, a->z, config::animal::size, 0, g, b);
-		draw::line3(a->x, a->y, a->z, a->x + (.1 * cos(a->direction * (PI / 180))), a->y + (.1 * sin(a->direction * (PI / 180))), 0, 0, g, b);
+		draw::line3(
+			a->x,
+			a->y,
+			a->z,
+			a->x + (.1 * cos(a->direction * (PI / 180))) * config::graphics::scale_x,
+			a->y + (.1 * sin(a->direction * (PI / 180))) * config::graphics::scale_y,
+			0,
+			0,
+			g, 
+			b
+		);
 	}
 	
 	for(i = 0; i < this->num_food; i++)

@@ -3,16 +3,16 @@
 // ----------------------------------------
 // graphics settings
 // ----------------------------------------
-unsigned int config::graphics::win_x		=	300;
-unsigned int config::graphics::win_y		=	300;
-unsigned int config::graphics::scr_x		=	8;
-unsigned int config::graphics::scr_y		=	12;
-unsigned int config::graphics::scr_z		=	0;
-unsigned int config::graphics::bug_win_x	=	300;
-unsigned int config::graphics::bug_win_y	=	300;
+unsigned int config::graphics::win_x		=	800;
+unsigned int config::graphics::win_y		=	600;
+unsigned int config::graphics::bug_win_x	=	config::graphics::win_x;
+unsigned int config::graphics::bug_win_y	=	config::graphics::win_y;
 float config::graphics::initial_x			=	0;
 float config::graphics::initial_y			=	0;
-float config::graphics::initial_z			=	-config::graphics::scr_y * 1.6;
+float config::graphics::initial_z			=	-12 * 1.6;
+float config::graphics::scale_x				=	300 / (float)config::graphics::bug_win_x;		// these two allow arbitrary scaling of the window size
+float config::graphics::scale_y				=	300 / (float)config::graphics::bug_win_y;
+float config::graphics::scale_z				=	300 / (float)config::graphics::bug_win_x;
 
 // ----------------------------------------
 // population settings
