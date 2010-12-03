@@ -98,7 +98,7 @@ unsigned int population::step()
 {
 	unsigned int i, f;
 	animal *a;
-	vector<double> fstats, astats;
+	vector<float> fstats, astats;
 	
 	if(this->paused)
 	{
@@ -225,17 +225,17 @@ void population::epoch()
 	this->generation++;
 }
 
-vector<double> population::get_current_animals_closest_food_stats()
+vector<float> population::get_current_animals_closest_food_stats()
 {
-	vector<double> output;
+	vector<float> output;
 	unsigned int i, track_n_foods, fidx = 0;
-	double f_amount;
-	double angle_diff, tmpdist, ldist = 0, dist = 99999;
+	float f_amount;
+	float angle_diff, tmpdist, ldist = 0, dist = 99999;
 	animal *a	=	&this->animals[this->cur_animal];
 	food *f;
-	pair<double, unsigned int> distpair;
-	list< pair<double, unsigned int> > nearby;
-	list< pair<double, unsigned int> >::iterator nearby_i;
+	pair<float, unsigned int> distpair;
+	list< pair<float, unsigned int> > nearby;
+	list< pair<float, unsigned int> >::iterator nearby_i;
 	
 	track_n_foods	=	config::animal::track_n_foods > this->num_food ? this->num_food : config::animal::track_n_foods;
 	
@@ -243,7 +243,7 @@ vector<double> population::get_current_animals_closest_food_stats()
 	for(i = 0; i < this->num_food; i++)
 	{
 		f		=	&this->foods[i];
-		tmpdist	=	pow(pow(a->x - f->x, 2) + pow(a->y - f->y, 2) + pow(a->z - f->z, 2), .5);
+		tmpdist	=	(float)pow(pow((double)(a->x - f->x), 2) + pow((double)(a->y - f->y), 2) + pow((double)(a->z - f->z), 2), .5);
 
 		// prevent /0
 		if(tmpdist == 0)
@@ -293,17 +293,17 @@ vector<double> population::get_current_animals_closest_food_stats()
 	return output;
 }
 
-vector<double> population::get_current_animals_closest_animals()
+vector<float> population::get_current_animals_closest_animals()
 {
-	vector<double> output;
+	vector<float> output;
 	unsigned int i, track_n_animals, aidx = 0;
-	double a_direction;
-	double angle_diff, aangle_diff, tmpdist, ldist = 0, dist = 99999;
+	float a_direction;
+	float angle_diff, aangle_diff, tmpdist, ldist = 0, dist = 99999;
 	animal *a	=	&this->animals[this->cur_animal];
 	animal *pal;
-	pair<double, unsigned int> distpair;
-	list< pair<double, unsigned int> > nearby;
-	list< pair<double, unsigned int> >::iterator nearby_i;
+	pair<float, unsigned int> distpair;
+	list< pair<float, unsigned int> > nearby;
+	list< pair<float, unsigned int> >::iterator nearby_i;
 	
 	track_n_animals	=	config::animal::track_n_animals > this->num_animals ? this->num_animals : config::animal::track_n_animals;
 	
@@ -317,7 +317,7 @@ vector<double> population::get_current_animals_closest_animals()
 		}
 		
 		pal		=	&this->animals[i];
-		tmpdist	=	pow(pow(a->x - pal->x, 2) + pow(a->y - pal->y, 2) + pow(a->z - pal->z, 2), .5);
+		tmpdist	=	(float)pow(pow((double)(a->x - pal->x), 2) + pow((double)(a->y - pal->y), 2) + pow((double)(a->z - pal->z), 2), .5);
 
 		// prevent /0
 		if(tmpdist == 0)
@@ -369,10 +369,10 @@ vector<double> population::get_current_animals_closest_animals()
 	return output;
 }
 
-double population::angle_diff(float x1, float y1, float x2, float y2, double direction)
+float population::angle_diff(float x1, float y1, float x2, float y2, float direction)
 {
 	int negx, negy;
-	double angle, angle_diff;
+	float angle, angle_diff;
 	
 	negx	=	x2 - x1 < 0 ? -1 : 1;
 	negy	=	y2 - y1 < 0 ? -1 : 1;

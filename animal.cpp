@@ -38,7 +38,7 @@ void animal::reset()
 
 void animal::eat(food *f)
 {
-	double f_diff;
+	float f_diff;
 	if(this->chewing > 0)
 	{
 		return;
@@ -54,7 +54,7 @@ void animal::eat(food *f)
 void animal::run()
 {
 	unsigned int i;
-	double inputs[this->inputs.size()];
+	float inputs[this->inputs.size()];
 	NEAT::Network *net;
 	
 	if(this->chewing > 0)
@@ -75,7 +75,7 @@ void animal::run()
 	}
 	
 	net	=	this->organism->net;
-	net->load_sensors(inputs);
+	net->load_sensors((double *)inputs);
 	net->activate();
 	
 	this->outputs.clear();
