@@ -9,12 +9,12 @@ using namespace std;
 draw::draw() {}
 draw::~draw() {}
 
-void draw::line(unsigned int x, unsigned int y, unsigned int x2, unsigned int y2, float r, float g, float b)
+void draw::line(float x, float y, float x2, float y2, float r, float g, float b)
 {
 	glColor3f(r, g, b);
 	glBegin(GL_LINES);
-		glVertex2i(x, y);
-		glVertex2i(x2, y2);
+		glVertex2f(x, y);
+		glVertex2f(x2, y2);
 	glEnd();
 }
 
@@ -27,15 +27,15 @@ void draw::line3(float x1, float y1, float z1, float x2, float y2, float z2, flo
 	glEnd();
 }
 
-void draw::square(unsigned int x, unsigned int y, unsigned int size, float r, float g, float b)
+void draw::square(float x, float y, float size, float r, float g, float b)
 {
-	int half	=	size / 2;
+	float half	=	size / 2;
 	glColor3f(r, g, b);
 	glBegin(GL_POLYGON);
-		glVertex2i(x - half, y - half);
-		glVertex2i(x - half, y + half);
-		glVertex2i(x + half, y + half);
-		glVertex2i(x + half, y - half);
+		glVertex2f(x - half, y - half);
+		glVertex2f(x - half, y + half);
+		glVertex2f(x + half, y + half);
+		glVertex2f(x + half, y - half);
 	glEnd();
 }
 

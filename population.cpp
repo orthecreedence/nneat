@@ -61,8 +61,19 @@ void population::assign_animals()
 {
 	vector<NEAT::Species*>::iterator si;
 	vector<NEAT::Organism*>::iterator oi;
-	animal a;
+	animal *a;
+	unsigned i;
 	
+	// release our memory
+	// TODO: research if the vector object does this for me =]
+	if(this->animals.size() > 0)
+	{
+		for(i = 0; i < this->animals.size(); i++)
+		{
+			delete this->animals[i];
+		}
+	}
+
 	this->animals.clear();
 	this->num_animals	=	0;
 	
@@ -77,7 +88,8 @@ void population::assign_animals()
 			
 			for(oi = (*si)->organisms.begin(); oi != (*si)->organisms.end(); oi++)
 			{
-				a.reset((*oi));
+				a	=	new animal();
+				a->reset((*oi));
 				this->animals.push_back(a);
 				this->num_animals++;
 			}
@@ -107,7 +119,7 @@ unsigned int population::step()
 	
 	for(i = 0; i < this->animals.size(); i++)
 	{
-		a	=	&this->animals[this->cur_animal];
+		a	=	this->animals[this->cur_animal];
 		//cout << "animal [" << i << "] pos: " << a->x << " " << a->y << " " << a->z << endl;
 		
 		fstats	=	this->get_current_animals_closest_food_stats();
@@ -231,7 +243,7 @@ vector<float> population::get_current_animals_closest_food_stats()
 	unsigned int i, track_n_foods, fidx = 0;
 	float f_amount;
 	float angle_diff, tmpdist, ldist = 0, dist = 99999;
-	animal *a	=	&this->animals[this->cur_animal];
+	animal *a	=	this->animals[this->cur_animal];
 	food *f;
 	pair<float, unsigned int> distpair;
 	list< pair<float, unsigned int> > nearby;
@@ -248,7 +260,7 @@ vector<float> population::get_current_animals_closest_food_stats()
 		// prevent /0
 		if(tmpdist == 0)
 		{
-			tmpdist	=	.00001f;
+			tmpdist	=	.0001;
 		}
 		
 		if(tmpdist < config::animal::size)
@@ -299,7 +311,7 @@ vector<float> population::get_current_animals_closest_animals()
 	unsigned int i, track_n_animals, aidx = 0;
 	float a_direction;
 	float angle_diff, aangle_diff, tmpdist, ldist = 0, dist = 99999;
-	animal *a	=	&this->animals[this->cur_animal];
+	animal *a	=	this->animals[this->cur_animal];
 	animal *pal;
 	pair<float, unsigned int> distpair;
 	list< pair<float, unsigned int> > nearby;
@@ -316,13 +328,13 @@ vector<float> population::get_current_animals_closest_animals()
 			continue;
 		}
 		
-		pal		=	&this->animals[i];
+		pal		=	this->animals[i];
 		tmpdist	=	(float)pow(pow((double)(a->x - pal->x), 2) + pow((double)(a->y - pal->y), 2) + pow((double)(a->z - pal->z), 2), .5);
 
 		// prevent /0
 		if(tmpdist == 0)
 		{
-			tmpdist	=	.00001f;
+			tmpdist	=	.0001;
 		}
 		
 		if(tmpdist < .3)
@@ -351,10 +363,10 @@ vector<float> population::get_current_animals_closest_animals()
 		distpair	=	(*nearby_i);
 		aidx		=	distpair.second;
 		dist		=	distpair.first;
-		a_direction	=	this->animals[aidx].direction;
+		a_direction	=	this->animals[aidx]->direction;
 		
-		angle_diff	=	this->angle_diff(this->animals[aidx].x, this->animals[aidx].y, a->x, a->y, a->direction);
-		aangle_diff	=	this->angle_diff(a->x, a->y, this->animals[aidx].x, this->animals[aidx].y, this->animals[aidx].direction);
+		angle_diff	=	this->angle_diff(this->animals[aidx]->x, this->animals[aidx]->y, a->x, a->y, a->direction);
+		aangle_diff	=	this->angle_diff(a->x, a->y, this->animals[aidx]->x, this->animals[aidx]->y, this->animals[aidx]->direction);
 		
 		// get the distance relative to the furthest target
 		dist	=	dist / ldist;
@@ -362,8 +374,8 @@ vector<float> population::get_current_animals_closest_animals()
 		output.push_back(angle_diff);
 		output.push_back(aangle_diff);
 		output.push_back(dist / ldist);
-		output.push_back(this->animals[aidx].speed);
-		output.push_back(this->animals[aidx].shock ? 1 : 0);
+		output.push_back(this->animals[aidx]->speed);
+		output.push_back(this->animals[aidx]->shock ? 1 : 0);
 	}
 	
 	return output;
@@ -413,7 +425,7 @@ float population::angle_diff(float x1, float y1, float x2, float y2, float direc
 
 void population::kill_current()
 {
-	this->animals[this->cur_animal].organism->fitness	=	0;
+	this->animals[this->cur_animal]->organism->fitness	=	0;
 	
 	if(config::population::parallel_process)
 	{
@@ -443,7 +455,7 @@ void population::display()
 	{
 		for(i = 0; i < this->animals.size(); i++)
 		{
-			a	=	&this->animals[i];
+			a	=	this->animals[i];
 			g	=	a->shock ? 1 : 0;
 			b	=	a->stunned ? 1 : 0;
 			/* disabling 3d
@@ -474,7 +486,7 @@ void population::display()
 	}
 	else
 	{
-		a	=	&this->animals[this->cur_animal];
+		a	=	this->animals[this->cur_animal];
 		g	=	a->shock ? 1 : 0;
 		b	=	a->stunned ? 1 : 0;
 		/* disabling 3d

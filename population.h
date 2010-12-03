@@ -22,7 +22,7 @@ public:
 	NEAT::Genome *genome;
 	NEAT::Population *pop;
 	
-	std::vector<animal> animals;
+	std::vector<animal*> animals;
 	std::vector<food> foods;
 	
 	bool paused;

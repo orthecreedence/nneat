@@ -14,7 +14,9 @@ animal::animal()
 	this->reset();
 }
 
-animal::~animal() {}
+animal::~animal()
+{
+}
 
 void animal::reset(NEAT::Organism *organism)
 {
@@ -54,7 +56,7 @@ void animal::eat(food *f)
 void animal::run()
 {
 	unsigned int i;
-	float inputs[this->inputs.size()];
+	double inputs[this->inputs.size()];
 	NEAT::Network *net;
 	
 	if(this->chewing > 0)
@@ -71,11 +73,11 @@ void animal::run()
 	
 	for(i = 0; i < this->inputs.size(); i++)
 	{
-		inputs[i]	=	this->inputs[i];
+		inputs[i]	=	(double)this->inputs[i];
 	}
 	
 	net	=	this->organism->net;
-	net->load_sensors((double *)inputs);
+	net->load_sensors(inputs);
 	net->activate();
 	
 	this->outputs.clear();
@@ -84,8 +86,8 @@ void animal::run()
 		this->outputs.push_back(net->outputs[i]->activation);
 	}
 	
-	this->direction	+=	(2 * config::animal::max_turn_angle) * (this->outputs[0] - .5);
-	this->speed		=	(2 * this->outputs[1]) - 1;
+	this->direction	+=	(2 * config::animal::max_turn_angle) * ((float)this->outputs[0] - .5);
+	this->speed		=	(2 * (float)this->outputs[1]) - 1;
 	if(config::animal::shocking)
 	{
 		this->shock		=	(this->outputs[2] > config::animal::shock_threshold) ? true : false;
