@@ -7,8 +7,8 @@ food::~food() {}
 
 void food::reset()
 {
-	this->x			=	RAND * RAND_BIN_NEG;
-	this->y			=	RAND * RAND_BIN_NEG;
+	this->x			=	RAND * config::graphics::win_x;
+	this->y			=	RAND * config::graphics::win_y;
 	this->z			=	0;
 	this->amount	=	config::food::start_amount;
 }

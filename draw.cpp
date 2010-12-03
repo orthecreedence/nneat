@@ -1,7 +1,10 @@
 #include <GL/glut.h>
+#include <iostream>
 
 #include "config.h"
 #include "draw.h"
+
+using namespace std;
 
 draw::draw() {}
 draw::~draw() {}
@@ -38,9 +41,9 @@ void draw::square(unsigned int x, unsigned int y, unsigned int size, float r, fl
 
 void draw::square3(float x, float y, float z, float size, float r, float g, float b)
 {
-	float half_x	=	(size / 2) * config::graphics::scale_x;
-	float half_y	=	(size / 2) * config::graphics::scale_y;
-	float half_z	=	(size / 2) * config::graphics::scale_z;
+	float half_x	=	(size / 2);
+	float half_y	=	(size / 2);
+	float half_z	=	(size / 2);
 	glColor3f(r, g, b);
 	
 	glBegin(GL_QUADS);
@@ -101,4 +104,47 @@ void draw::map_xy_xyz(int x, int y, float *pos)
 	*pos	=	(float)posY;
 	pos++;
 	*pos	=	(float)posZ;
+}
+
+void draw::mode2d(bool on)
+{
+	if(on)
+	{
+		int vPort[4];
+
+		glGetIntegerv(GL_VIEWPORT, vPort);
+
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+
+		glOrtho(0, vPort[2], 0, vPort[3], -1, 1);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+	}
+	else
+	{
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();   
+		glMatrixMode(GL_MODELVIEW);
+		glPopMatrix();	
+	}
+}
+
+void draw::text(float x, float y, string msg)
+{
+	draw::mode2d(true);
+
+	glColor3f(0.0, 0.0, 0.0);
+	glRasterPos2i((GLint)x, (GLint)((config::graphics::win_y - y)) - 13);		// subtraction because opengl is like an x/y plane (0,0 is lower left)
+	
+	void * font = GLUT_BITMAP_8_BY_13;
+	for (string::iterator i = msg.begin(); i != msg.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+
+	draw::mode2d(false);
 }

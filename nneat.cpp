@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <stdio.h>
 
 using namespace std;
 
@@ -88,14 +89,18 @@ void key_cb(unsigned char key, int x, int y)
 			pthread_mutex_unlock(&mtx_psignal);
 		case 'r':
 			// reset the view
-			camera.x	=	config::graphics::initial_x;
-			camera.y	=	config::graphics::initial_y;
-			camera.z	=	config::graphics::initial_z;
+			camera.x		=	config::graphics::initial_x;
+			camera.y		=	config::graphics::initial_y;
+			camera.z		=	config::graphics::initial_z;
+			camera.anglex	=	0;
+			camera.angley	=	0;
+			camera.anglez	=	0;
 			
 			glLoadIdentity();
 			
 			glTranslatef(camera.x, camera.y, camera.z);
 			
+			/*
 			glRotatef(camera.anglex, 1, 0, 0);
 			glRotatef(camera.angley, 0, 1, 0);
 			glRotatef(camera.anglez, 0, 0, 1);
@@ -103,10 +108,11 @@ void key_cb(unsigned char key, int x, int y)
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			gluLookAt(
-				0.0, 0.0, 10.0, 
-				0.0, 0.0, -1.0,
+				camera.x, camera.y, camera.z, 
+				camera.x / 2, camera.y / 2, 0,
 				0.0, 1.0, 0.0
 			);
+			*/
 			break;
 		case 'k':
 			// "kill" the current animal (set its fitness to 0 and give it no more iterations)
@@ -161,7 +167,7 @@ void resize_cb(int w, int h)
 		h = 1;
 	}
 	
-	float ratio	=	1.0* w / h;
+	float ratio	=	1.0 * w / h;
 	
 	// Reset the coordinate system before modifying
 	glMatrixMode(GL_PROJECTION);
@@ -171,7 +177,7 @@ void resize_cb(int w, int h)
 	glViewport(0, 0, w, h);
 	
 	// Set the correct perspective.
-	gluPerspective(45,ratio,1,1000);
+	gluPerspective(45, ratio, 1, 1000);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(
@@ -285,12 +291,36 @@ void display_cb_bug()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glLoadIdentity();
+
+	// TODO: disable for 3d
+	draw::mode2d(true);
+
+	glTranslatef(camera.x, camera.y, camera.z);
 	
+	glRotatef(camera.anglex, 1, 0, 0);
+	glRotatef(camera.angley, 0, 1, 0);
+	glRotatef(camera.anglez, 0, 0, 1);
+
 	pop.display();
-	
+
+	/* disabing debug shit
+	char display[256];
+	sprintf(display, "Camera: %.2f %.2f %.2f", camera.x, camera.y, camera.z );
+	draw::text(0, 0, (string)display);
+
+	sprintf(display, "Angle: %.2f %.2f %.2f", camera.anglex, camera.angley, camera.anglez);
+	draw::text(0, 16, (string)display);
+
+	sprintf(display, "Animal: %.2f %.2f %.2f %.2f", pop.animals[0].x, pop.animals[0].y, pop.animals[0].z, pop.animals[0].x + (2.5 * config::animal::size * cos(pop.animals[0].direction * (PI / 180))));
+	draw::text(0, 32, (string)display);
+	*/
+
 	pthread_mutex_lock(&mtx_fast_wait);
 	fast_wait	=	false;
 	pthread_mutex_unlock(&mtx_fast_wait);
+
+	// TODO: disable for 3d
+	draw::mode2d(false);
 	
 	// swap to our buffer and show the network we just built
 	glutSwapBuffers();
@@ -384,7 +414,7 @@ int main(int argc, char ** argv)
 	glutMotionFunc(mouse_drag_cb);
 	glutReshapeFunc(resize_cb);
 	glTranslatef(camera.x, camera.y, camera.z);
-	//gluOrtho2D(0, G_WIN_X, 0, G_WIN_Y);
+	//gluOrtho2D(0, config::graphics::win_x, 0, config::graphics::win_y);
 	
 	glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);

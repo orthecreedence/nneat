@@ -21,9 +21,6 @@ public:
 	{
 	public:
 		static unsigned int win_x, win_y;
-
-		static float scale_x, scale_y, scale_z;
-		
 		static float initial_x, initial_y, initial_z;
 	};
 	
@@ -61,6 +58,7 @@ public:
 		static float max_turn_angle;
 		
 		static float size;
+		static float tail_size;
 	};
 	
 	// food settings

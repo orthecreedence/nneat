@@ -25,6 +25,10 @@ void animal::reset(NEAT::Organism *organism)
 
 void animal::reset()
 {
+	this->x			=	RAND * (float)config::graphics::win_x;
+	this->y			=	RAND * (float)config::graphics::win_y;
+	this->z			=	0;
+
 	this->direction	=	RAND * 360;
 	this->speed		=	0;
 	this->shock		=	false;

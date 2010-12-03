@@ -5,12 +5,9 @@
 // ----------------------------------------
 unsigned int config::graphics::win_x		=	600;
 unsigned int config::graphics::win_y		=	600;
-float config::graphics::initial_x			=	0;
-float config::graphics::initial_y			=	0;
-float config::graphics::initial_z			=	-12 * 1.6;
-float config::graphics::scale_x				=	.1;//300 / (float)config::graphics::bug_win_x;		// these two allow arbitrary scaling of the window size
-float config::graphics::scale_y				=	.1;//300 / (float)config::graphics::bug_win_y;
-float config::graphics::scale_z				=	.1;//300 / (float)config::graphics::bug_win_x;
+float config::graphics::initial_x			=	0;//(float)config::graphics::win_x / 2;
+float config::graphics::initial_y			=	0;//(float)config::graphics::win_y / 2;
+float config::graphics::initial_z			=	0;//-((float)config::graphics::win_x) * 1.6;
 
 // ----------------------------------------
 // population settings
@@ -38,7 +35,8 @@ bool config::animal::shocking					=	false;
 float config::animal::shock_threshold			=	.95;
 unsigned int config::animal::frozen_ticks		=	100;
 float config::animal::max_turn_angle			=	30;
-float config::animal::size						=	10;
+float config::animal::size						=	8;
+float config::animal::tail_size					=	20;
 
 // ----------------------------------------
 // food settings

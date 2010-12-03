@@ -78,9 +78,6 @@ void population::assign_animals()
 			for(oi = (*si)->organisms.begin(); oi != (*si)->organisms.end(); oi++)
 			{
 				a.reset((*oi));
-				a.x	=	RAND * RAND_BIN_NEG;
-				a.y	=	RAND * RAND_BIN_NEG;
-				a.z	=	0;
 				this->animals.push_back(a);
 				this->num_animals++;
 			}
@@ -111,6 +108,7 @@ unsigned int population::step()
 	for(i = 0; i < this->animals.size(); i++)
 	{
 		a	=	&this->animals[this->cur_animal];
+		//cout << "animal [" << i << "] pos: " << a->x << " " << a->y << " " << a->z << endl;
 		
 		fstats	=	this->get_current_animals_closest_food_stats();
 		astats	=	this->get_current_animals_closest_animals();
@@ -253,7 +251,7 @@ vector<double> population::get_current_animals_closest_food_stats()
 			tmpdist	=	.00001f;
 		}
 		
-		if(tmpdist < config::animal::size * config::graphics::scale_x)
+		if(tmpdist < config::animal::size)
 		{
 			a->eat(f);
 			if(f->amount <= 0)
@@ -327,7 +325,7 @@ vector<double> population::get_current_animals_closest_animals()
 			tmpdist	=	.00001f;
 		}
 		
-		if(tmpdist < .3 * config::graphics::scale_x)
+		if(tmpdist < .3)
 		{
 			a->organism->fitness	+=	.004 * (1 - (tmpdist / .3));
 			if(tmpdist < config::animal::size && a->shock)
@@ -448,14 +446,26 @@ void population::display()
 			a	=	&this->animals[i];
 			g	=	a->shock ? 1 : 0;
 			b	=	a->stunned ? 1 : 0;
+			/* disabling 3d
 			draw::square3(a->x, a->y, a->z, config::animal::size, 0, g, b);
 			draw::line3(
 				a->x,
 				a->y,
 				a->z,
-				a->x + (.1 * cos(a->direction * (PI / 180))) * config::graphics::scale_x,
-				a->y + (.1 * sin(a->direction * (PI / 180))) * config::graphics::scale_y,
+				a->x + (config::animal::tail_size * cos(a->direction * (PI / 180))),
+				a->y + (config::animal::tail_size * sin(a->direction * (PI / 180))),
 				0,
+				0,
+				g,
+				b
+			);
+			*/
+			draw::square(a->x, a->y, config::animal::size, 0, g, b);
+			draw::line(
+				a->x,
+				a->y,
+				a->x + (config::animal::tail_size * cos(a->direction * (PI / 180))),
+				a->y + (config::animal::tail_size * sin(a->direction * (PI / 180))),
 				0,
 				g,
 				b
@@ -467,16 +477,28 @@ void population::display()
 		a	=	&this->animals[this->cur_animal];
 		g	=	a->shock ? 1 : 0;
 		b	=	a->stunned ? 1 : 0;
+		/* disabling 3d
 		draw::square3(a->x, a->y, a->z, config::animal::size, 0, g, b);
 		draw::line3(
 			a->x,
 			a->y,
 			a->z,
-			a->x + (.1 * cos(a->direction * (PI / 180))) * config::graphics::scale_x,
-			a->y + (.1 * sin(a->direction * (PI / 180))) * config::graphics::scale_y,
+			a->x + (config::animal::tail_size * cos(a->direction * (PI / 180))),
+			a->y + (config::animal::tail_size * sin(a->direction * (PI / 180))),
 			0,
 			0,
 			g, 
+			b
+		);
+		*/
+		draw::square(a->x, a->y, config::animal::size, 0, g, b);
+		draw::line(
+			a->x,
+			a->y,
+			a->x + (config::animal::tail_size * cos(a->direction * (PI / 180))),
+			a->y + (config::animal::tail_size * sin(a->direction * (PI / 180))),
+			0,
+			g,
 			b
 		);
 	}
@@ -496,7 +518,9 @@ void population::display()
 			g	=	0;
 		}
 		
-		draw::square3(f->x, f->y, f->z, config::food::size * ((f->amount + 1) / config::food::start_amount), r, g, 0);
+		// disabling 3d
+		//draw::square3(f->x, f->y, f->z, config::food::size * ((f->amount + 1) / config::food::start_amount), r, g, 0);
+		draw::square(f->x, f->y, config::food::size * ((f->amount + 1) / config::food::start_amount), r, g, 0);
 	}
 }
 
