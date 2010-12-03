@@ -8,14 +8,14 @@
 class animal
 {
 public:
-	std::vector<double> inputs;
-	std::vector<double> outputs;
-	double x, y, z;
+	std::vector<float> inputs;
+	std::vector<float> outputs;
+	float x, y, z;
 	
 	NEAT::Organism *organism;
 	
-	double direction;
-	double speed;
+	float direction;
+	float speed;
 	bool shock;
 	unsigned int stunned;
 	unsigned int chewing;

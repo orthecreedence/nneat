@@ -41,9 +41,9 @@ public:
 	
 private:
 	void epoch();
-	std::vector<double> get_current_animals_closest_food_stats();
-	std::vector<double> get_current_animals_closest_animals();
-	double angle_diff(float, float, float, float, double);
+	std::vector<float> get_current_animals_closest_food_stats();
+	std::vector<float> get_current_animals_closest_animals();
+	float angle_diff(float, float, float, float, float);
 };
 
 #endif /* _NN_POPULATION_H */
