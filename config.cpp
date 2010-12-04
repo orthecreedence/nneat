@@ -24,8 +24,8 @@ bool config::population::parallel_process			=	true;
 // ----------------------------------------
 // animal settings
 // ----------------------------------------
-unsigned int config::animal::track_n_foods		=	4;
-unsigned int config::animal::track_n_animals	=	4;
+unsigned int config::animal::track_n_foods		=	3;
+unsigned int config::animal::track_n_animals	=	3;
 float config::animal::speed_constant			=	5;
 float config::animal::max_food_ingestion		=	1;
 unsigned int config::animal::chew_ticks			=	10;
