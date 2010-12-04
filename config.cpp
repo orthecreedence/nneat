@@ -13,11 +13,11 @@ float config::graphics::initial_z			=	0;//-((float)config::graphics::win_x) * 1.
 // population settings
 // ----------------------------------------
 unsigned int config::population::num_animals		=	12;
-unsigned int config::population::num_food			=	24;
+unsigned int config::population::num_food			=	32;
 unsigned int config::population::gen_before_famine	=	20;
-float config::population::famine_prob				=	.1;
+float config::population::famine_prob				=	0;
 float config::population::famine_percent			=	.25;
-unsigned int config::population::num_ticks			=	1600;
+unsigned int config::population::num_ticks			=	3000;
 unsigned int config::population::delay				=	0;
 bool config::population::parallel_process			=	true;
 
@@ -26,7 +26,7 @@ bool config::population::parallel_process			=	true;
 // ----------------------------------------
 unsigned int config::animal::track_n_foods		=	4;
 unsigned int config::animal::track_n_animals	=	4;
-float config::animal::speed_constant			=	10;
+float config::animal::speed_constant			=	5;
 float config::animal::max_food_ingestion		=	1;
 unsigned int config::animal::chew_ticks			=	10;
 float config::animal::fitness_run_penalty		=	0;
@@ -48,6 +48,6 @@ float config::food::start_amount	=	5;
 // network settings
 // ----------------------------------------
 unsigned int config::network::num_inputs		=	1 + (3 * config::animal::track_n_foods) + (5 * config::animal::track_n_animals);
-unsigned int config::network::num_hidden		=	config::network::num_inputs;
+unsigned int config::network::num_hidden		=	6;
 unsigned int config::network::num_outputs		=	3;
 unsigned short int config::network::genome_type	=	2;
